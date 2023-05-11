@@ -87,29 +87,6 @@ const resolvers = {
             }
 
         },
-        nuevoUsuario: async (_, {input}) => {
-
-            const {us, contra} = input;
-           
-            //Revisar si el usuario ya esta registrado
-            const existeUsuario = await Usuario.findOne({us});
-            if (existeUsuario){
-                throw new Error('El usuario ya existe');
-            }
-            
-            //Hashear su contraseña
-           const salt = await bcryptjs.genSalt(10);
-           input.contra = await bcryptjs.hash(contra,salt);
-            
-            // Guardalo en la base de datos
-            try{
-                const usuario = new Usuario(input);
-                usuario.save();
-                return usuario;
-            }catch (error) {
-                console.log(error);
-            }
-        }, 
         
         nuevoSitio: async (_,{input}) => {
             try{
@@ -146,7 +123,17 @@ const resolvers = {
             //Eliminar
             await Sitio.findOneAndDelete({_id : id});
             return "Producto eliminado";
-        } 
+        },
+        
+        nuevoUsuario: async (_, {input}) => {
+            //verifivar si el usuario ya esta registrado
+
+            //asignar al administrador 
+
+            //guardar en la base de datos 
+            
+        }
+        
     }
 }
 

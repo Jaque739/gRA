@@ -58,6 +58,11 @@ const UsuariosSchema = mongoose.Schema ({
         required:true,
         trim: true
     },
+    administrador: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Usuario'
+    },
     creado: {
         type: Date,
         default: Date.now()

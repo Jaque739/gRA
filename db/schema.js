@@ -26,6 +26,7 @@ type Usuario{
     cord_lat: String
     us: String
     creado: String
+    administrador: id
 }
     type Token {
         token: String
@@ -101,13 +102,13 @@ type Mutation {
     nuevoAdmi (input: AdmiInput): Admi
     autenticarAdmi(input: AutenticarInput) : Token
 
-    #Usuarios
-    nuevoUsuario (input: UsuarioInput): Usuario
-
     #Sitio
     nuevoSitio (input: SitioInput) : Sitio
     actualizarSitio (id: ID!, input : SitioInput ) : Sitio
     eliminarSitio(id: ID!) : String
+
+    #Usuarios
+    nuevoUsuario (input: UsuarioInput): Usuario
 }
 
 `;
