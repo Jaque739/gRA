@@ -3,13 +3,15 @@ const Usuario = require ('../models/Usuarios');
 const Sitio = require ('../models/Sitio');
 const bcryptjs = require ('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Contactos = require('../models/Contactos');
 require ('dotenv').config({ path: 'variables.env'});
 
-const crearToken = (admi, secreta, expiresIn) =>{
+const crearToken = (cuenta, secreta, expiresIn) =>{
     //console.log(usuario);
-    const{id,nombre, apellidos, email}= admi;
+    const{id,nombre, apellidos, email, us }= cuenta;
+    
 
-    return jwt.sign( {id,nombre,apellidos,email}, secreta, {expiresIn} )
+    return jwt.sign( {id,nombre,apellidos,email, us }, secreta, {expiresIn} )
 } 
 
 
@@ -21,6 +23,15 @@ const resolvers = {
 
             return admiId
         }, 
+
+
+        obtenerUsuario: async (_, { token }) => {
+            const usuarioId = await jwt.verify(token, process.env.SECRETA)
+
+            return usuarioId
+        }, 
+
+    
         obtenerSitio: async () => {
             try{
                 const sitio = await Sitio.find({});
@@ -37,6 +48,34 @@ const resolvers = {
                 throw new Error('Sitio no encontrado');
             }
             return sitio;
+        },
+        obtenerUsuarios: async () => {
+            try {
+                const usuario = await Usuario.find({});
+                return usuario;
+            } catch (error) {
+                console.log(error);                
+            }
+        },
+
+        obtenerUsuariosVendedor: async (_, {}, ctx) => {
+            try {
+                const usuario = await Usuario.find({ });
+                return usuario;
+            } catch (error) {
+                console.log(error);              
+            }
+        },
+        
+        obtenerUsuario: async (_, {id}, ctx) => {
+            //Revisar si el cliente exixte o no 
+            const usuario = await Usuario.findById(id);
+
+            if(!usuario){
+                throw new Error('Usuario no encontrado');
+            }
+            return usuario;
+            
         }
 
         },
@@ -55,7 +94,6 @@ const resolvers = {
            const salt = await bcryptjs.genSalt(10);
            input.password = await bcryptjs.hash(password,salt);
 
-           
            try{
             //Guardarlo en la base de datos
             const admi = new Admi(input);
@@ -66,7 +104,6 @@ const resolvers = {
            }
         },
         autenticarAdmi: async (_, {input}) => {
-            
             const {email, password} = input;
             
             //Si elusuario existe
@@ -125,13 +162,101 @@ const resolvers = {
             return "Producto eliminado";
         },
         
-        nuevoUsuario: async (_, {input}) => {
-            //verifivar si el usuario ya esta registrado
+        nuevoUsuario: async (_, {input}, ctx) => {
 
+            console.log(ctx);
+
+            const {us} = input
+            //Verificar si el cliente ya esta refistrado
+            //console.log(input);
+
+            const usuario = await Usuario.findOne({us});
+            if(usuario){
+                throw new Error('El usuario ya existe'); 
+            }
+
+            const nuevoUsuario = new Usuario(input);
+
+            //asignar el vendedor
+
+            nuevoUsuario.vendedor =  '646fcf0e12d0d733ccf62102';
+            //guardarlo en la base de datos
+
+            try {
+            
+                const resultado = await nuevoUsuario.save(); 
+                //console.log('Desde resolvers resultado ', resultado );
+                return resultado;
+                
+            } catch (error) {
+                console.log('hubo un error ', error);
+            }
+        },
+
+        autenticarUsuario: async (_, {input}) => {
+            
+            const {us, contra} = input;
+            
+            //Si elusuario existe
+            const existeUs = await Usuario.findOne({us});
+            if(!existeUs){
+                throw new Error('El Usuario no existe');
+            }
+            //Si la contraseña es correcta
+            const contraCorrecta = await bcryptjs.compare(contra, existeUs.contra);
+            if(!contraCorrecta){
+                throw new Error('La contraseña es incorrecta');
+            }
+
+            //Crear el token
+            return{
+                token: crearToken(existeUs, process.env.SECRETA, '24h')
+
+            }
+
+        },
+
+        actualizarUsuarios: async (_,{id,input},ctx) => {
+            //Verifivar si existe o no 
+            let usuario = await Usuario.findById(id);
+
+            if(!usuario){
+                throw new Error('El usuario no existe');
+            }
+            
+            //Verificar si el vendedor es el que edita
+
+            //guardar cliene
+            usuario = await Usuario.findOneAndUpdate({_id : id},input, {new: true});
+            return usuario;
+        },
+
+        eliminarUsuario: async (_,{id},ctx) => {
+             //Verifivar si existe o no 
+             let usuario = await Usuario.findById(id);
+
+             if(!usuario){
+                 throw new Error('El usuario no existe');
+             }
+
+             //Eliminar Usuario 
+             await Usuario.findByIdAndDelete({_id : id});
+             return "Usuario Eliminado"
+        },
+        
+        nuevoContacto: async (_, {input}, ctx) => {
+          
+            console.log(input);
             //asignar al administrador 
+            const{email} = input
+
+            const contactos = await Contactos.findOne({email})
+
+            const nuevoContacto = Contactos(input);
 
             //guardar en la base de datos 
-            
+            const resultado =  await nuevoContacto.save();
+                return resultado;
         }
         
     }

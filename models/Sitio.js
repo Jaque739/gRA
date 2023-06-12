@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const SitioSchema = mongoose.Schema ({
+    
+    nombre:{
+        type: String,
+        required:true,
+        trim: true
+    },
 
     rfc: {
         type: String,
@@ -9,7 +15,7 @@ const SitioSchema = mongoose.Schema ({
 
     },
     telf: {
-        type: Number,
+        type: String,
         required:true,
         trim: true
 

@@ -12,21 +12,18 @@ type Admi{
     password: String
 }
 
-type Usuario{
+type Usuario {
 
     id: ID
     nombre: String
-    apellidos: String
+    apellido: String
     telefono: String
-    direccion: String
-    nom_lugar: String
-    giro: String
-    direc_lugar: String
-    cord_log: String
-    cord_lat: String
+    email: String
     us: String
+    contra:String
+    vendedor: ID
     creado: String
-    administrador: id
+
 }
     type Token {
         token: String
@@ -34,8 +31,9 @@ type Usuario{
 
     type Sitio {
         id: ID
+        nombre: String
         rfc: String
-        telf: Int
+        telf: String
         direc: String
         horario: String
         pag_web: String
@@ -48,6 +46,15 @@ type Usuario{
         creado: String
     }
 
+    type Contactos {
+    id: ID 
+    nombre: String
+    email: String
+    telefono: String 
+    mensaje: String
+    creado: String
+    }
+
 input AdmiInput{
     nombre: String
     apellidos: String
@@ -57,14 +64,9 @@ input AdmiInput{
 
 input UsuarioInput{
     nombre: String!
-    apellidos: String!
+    apellido: String!
     telefono: String!
-    direccion: String!
-    nom_lugar: String!
-    giro: String
-    direc_lugar: String!
-    cord_log: String!
-    cord_lat: String!
+    email: String!
     us: String!
     contra: String!
 }
@@ -74,9 +76,15 @@ input AutenticarInput{
     password: String!
 }
 
+input AutenticarUsInput{
+    us: String!
+    contra: String!
+}
+
 input SitioInput {
+    nombre: String!
     rfc: String
-    telf: Int!
+    telf: String!
     direc: String!
     horario: String!
     pag_web: String
@@ -88,6 +96,15 @@ input SitioInput {
     foto_lugar: String!
 }
 
+input ContactosInput {
+    nombre: String!
+    email: String!
+    telefono: String! 
+    mensaje: String!
+    creado: String
+
+}
+
 type Query {
     #Usuarios
     obtenerAdmi(token: String!) : Admi
@@ -95,6 +112,13 @@ type Query {
     #Sitio
     obtenerSitio: [Sitio]
     obtenerSitios(id: ID!) : Sitio
+
+    #Clientes
+    obtenerUsuarios: [Usuario]
+    obtenerUsuariosVendedor: [Usuario]
+    obtenerUsuario(id: ID!): Usuario
+  
+    
 }
 
 type Mutation {
@@ -109,6 +133,14 @@ type Mutation {
 
     #Usuarios
     nuevoUsuario (input: UsuarioInput): Usuario
+    actualizarUsuarios(id: ID!, input: UsuarioInput) :Usuario
+    eliminarUsuario(id: ID!) : String
+    autenticarUsuario(input: AutenticarUsInput) : Token
+
+    
+
+    #Contactos
+    nuevoContacto(input: ContactosInput) : Contactos
 }
 
 `;

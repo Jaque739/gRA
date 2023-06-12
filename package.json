@@ -10,6 +10,8 @@
   "author": "Jaqueline y Karla",
   "license": "ISC",
   "dependencies": {
+    "@heroicons/vue": "^2.0.18",
+    "apollo-link-context": "^1.0.20",
     "apollo-server": "^3.12.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
