@@ -117,6 +117,7 @@ type Query {
     obtenerUsuarios: [Usuario]
     obtenerUsuariosVendedor: [Usuario]
     obtenerUsuario(id: ID!): Usuario
+    obtenerUsuarioID: Usuario
   
     
 }

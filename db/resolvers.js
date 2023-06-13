@@ -8,10 +8,10 @@ require ('dotenv').config({ path: 'variables.env'});
 
 const crearToken = (cuenta, secreta, expiresIn) =>{
     //console.log(usuario);
-    const{id,nombre, apellidos, email, us }= cuenta;
+    const{id,nombre, apellidos}= cuenta;
     
 
-    return jwt.sign( {id,nombre,apellidos,email, us }, secreta, {expiresIn} )
+    return jwt.sign( {id,nombre,apellidos }, secreta, {expiresIn} )
 } 
 
 
@@ -25,11 +25,11 @@ const resolvers = {
         }, 
 
 
-        obtenerUsuario: async (_, { token }) => {
-            const usuarioId = await jwt.verify(token, process.env.SECRETA)
+        // obtenerUsuario: async (_, { token }) => {
+        //     const usuarioId = await jwt.verify(token, process.env.SECRETA)
 
-            return usuarioId
-        }, 
+        //     return usuarioId
+        // }, 
 
     
         obtenerSitio: async () => {
@@ -76,6 +76,16 @@ const resolvers = {
             }
             return usuario;
             
+        },
+
+        obtenerUsuarioID: async (_, {}, ctx) => {
+            //Revisar si el cliente exixte o no             
+            try {
+                const usuario = await Usuario.findById(ctx.admi.id);
+                return usuario;
+            } catch (error) {
+                throw new Error ('No existe el usuario');
+            }
         }
 
         },
@@ -113,8 +123,11 @@ const resolvers = {
             }
             //Si la contraseña es correcta
             const passwordCorrecta = await bcryptjs.compare(password, existeAdmi.password);
+            // console.log(passwordCorrecta)
             if(!passwordCorrecta){
+                console.log(passwordCorrecta)
                 throw new Error('La contraseña es incorrecta');
+
             }
 
             //Crear el token
@@ -166,7 +179,7 @@ const resolvers = {
 
             console.log(ctx);
 
-            const {us} = input
+            const {us,contra} = input
             //Verificar si el cliente ya esta refistrado
             //console.log(input);
 
@@ -179,18 +192,35 @@ const resolvers = {
 
             //asignar el vendedor
 
-            nuevoUsuario.vendedor =  '646fcf0e12d0d733ccf62102';
+            // nuevoUsuario.vendedor =  '6474d40ff6ff7b5182d029ef';
+            nuevoUsuario.vendedor =  ctx.admi.id;
             //guardarlo en la base de datos
 
-            try {
+            //Hashear su contraseña
+           const salt = await bcryptjs.genSalt(10);
+           nuevoUsuario.contra = await bcryptjs.hash(contra,salt);
+
+           try{
+            //Guardarlo en la base de datos
+            await nuevoUsuario.save();
+            // const usuarioNuevo = await .save(); //guardar
+            return nuevoUsuario;
+
+            // return usuarioNuevo;
+
+           }catch(error){
+                console.log(error);
+           }
+
+            // try {
             
-                const resultado = await nuevoUsuario.save(); 
-                //console.log('Desde resolvers resultado ', resultado );
-                return resultado;
+            //     const resultado = await nuevoUsuario.save(); 
+            //     //console.log('Desde resolvers resultado ', resultado );
+            //     return resultado;
                 
-            } catch (error) {
-                console.log('hubo un error ', error);
-            }
+            // } catch (error) {
+            //     console.log('hubo un error ', error);
+            // }
         },
 
         autenticarUsuario: async (_, {input}) => {
@@ -201,8 +231,10 @@ const resolvers = {
             const existeUs = await Usuario.findOne({us});
             if(!existeUs){
                 throw new Error('El Usuario no existe');
+
             }
             //Si la contraseña es correcta
+            console.log(existeUs)
             const contraCorrecta = await bcryptjs.compare(contra, existeUs.contra);
             if(!contraCorrecta){
                 throw new Error('La contraseña es incorrecta');
