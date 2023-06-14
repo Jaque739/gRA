@@ -23,14 +23,6 @@ const resolvers = {
 
             return admiId
         }, 
-
-
-        // obtenerUsuario: async (_, { token }) => {
-        //     const usuarioId = await jwt.verify(token, process.env.SECRETA)
-
-        //     return usuarioId
-        // }, 
-
     
         obtenerSitio: async () => {
             try{
@@ -86,7 +78,15 @@ const resolvers = {
             } catch (error) {
                 throw new Error ('No existe el usuario');
             }
-        }
+        },
+        obtenerSitioCliente: async (_, {}, ctx) => {
+            try {
+                const sitio = await Sitio.find({cliente:ctx.admi.id.toString() });
+                return sitio;
+            } catch (error) {
+                console.log(error);              
+            }
+        },
 
         },
     Mutation: {
@@ -138,9 +138,12 @@ const resolvers = {
 
         },
         
-        nuevoSitio: async (_,{input}) => {
+        nuevoSitio: async (_,{input},ctx) => {
             try{
                 const sitio = new Sitio(input);
+
+            //asignar al cliente 
+            sitio.cliente = ctx.admi.id;
 
                 //almacenar en la bd
                 const resultado = await sitio.save();
@@ -191,8 +194,6 @@ const resolvers = {
             const nuevoUsuario = new Usuario(input);
 
             //asignar el vendedor
-
-            // nuevoUsuario.vendedor =  '6474d40ff6ff7b5182d029ef';
             nuevoUsuario.vendedor =  ctx.admi.id;
             //guardarlo en la base de datos
 
@@ -203,24 +204,13 @@ const resolvers = {
            try{
             //Guardarlo en la base de datos
             await nuevoUsuario.save();
-            // const usuarioNuevo = await .save(); //guardar
+            
             return nuevoUsuario;
-
-            // return usuarioNuevo;
 
            }catch(error){
                 console.log(error);
            }
 
-            // try {
-            
-            //     const resultado = await nuevoUsuario.save(); 
-            //     //console.log('Desde resolvers resultado ', resultado );
-            //     return resultado;
-                
-            // } catch (error) {
-            //     console.log('hubo un error ', error);
-            // }
         },
 
         autenticarUsuario: async (_, {input}) => {

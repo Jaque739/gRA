@@ -74,9 +74,15 @@ const SitioSchema = mongoose.Schema ({
         trim: true
 
     },
+
     creado: {
         type: Date,
         default: Date.now()
+    },
+    cliente: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Usuarios'
     }
 
 });

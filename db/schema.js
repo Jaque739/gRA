@@ -44,6 +44,7 @@ type Usuario {
         foto_menu: String
         foto_lugar: String
         creado: String
+        cliente: ID
     }
 
     type Contactos {
@@ -94,6 +95,7 @@ input SitioInput {
     foto_pres: String
     foto_menu: String
     foto_lugar: String!
+    
 }
 
 input ContactosInput {
@@ -112,6 +114,8 @@ type Query {
     #Sitio
     obtenerSitio: [Sitio]
     obtenerSitios(id: ID!) : Sitio
+    obtenerSitioCliente: [Sitio]
+    
 
     #Clientes
     obtenerUsuarios: [Usuario]
