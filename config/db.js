@@ -1,7 +1,10 @@
 const mongoose = require ('mongoose');
-require ('dotenv').config({ path: 'variables.env'});
+
 
 const conectarDB = async () => {
+
+   
+
     try {
         // await mongoose.connect ("mongodb+srv://karlavianney99:root@cluster0.jmcvy4k.mongodb.net/ProyectoBD", {
 
@@ -20,5 +23,7 @@ const conectarDB = async () => {
         console.log(error);
         process.exit(1);
     }
+
+   
 }
 module.exports = conectarDB;

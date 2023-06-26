@@ -39,6 +39,7 @@ type Usuario {
         pag_web: String
         fb: String
         ig: String
+        pueblos: String
         form_pago: String
         foto_pres: String
         foto_menu: String
@@ -91,6 +92,7 @@ input SitioInput {
     pag_web: String
     fb: String
     ig: String
+    pueblos: String!
     form_pago: String
     foto_pres: String
     foto_menu: String

@@ -50,6 +50,12 @@ const SitioSchema = mongoose.Schema ({
         trim: true
 
     },
+    pueblos: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
     form_pago: {
         type: String,
         required:true,
